@@ -43,10 +43,14 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         GroundCheck();
-        if (grounded)
+        if(grounded)
+        {
             GroundMovement();
-        else if (!grounded)
+        }
+        else
+        {
             MidAirMovement();
+        }
     }
     void Move(float movement)
     {
@@ -55,8 +59,6 @@ public class PlayerController : MonoBehaviour
 
     void Jump(bool pressed)
     {
-        if (grounded)
-            jumpDir = movementDir;
         jumpHeld = pressed; 
     }
 
@@ -68,18 +70,27 @@ public class PlayerController : MonoBehaviour
 
     void GroundMovement()
     {
-        mrigidbody.AddForce(movementDir * speed * Time.fixedDeltaTime);
-        if (jumpHeld)
-            mrigidbody.AddForce(Vector2.up * jumpForce);
-        else
+        jumpDir = movementDir;
+        Vector3 movement = movementDir * speed * Time.fixedDeltaTime;
+        mrigidbody.position = transform.position + movement;
+        if(jumpHeld)
         {
-            jumpDir = Vector2.zero;
+            mrigidbody.AddForce(Vector2.up * jumpForce * Time.fixedDeltaTime);
         }
     }
 
     void MidAirMovement()
     {
-        mrigidbody.AddForce(jumpDir * speed * Time.fixedDeltaTime);
-
+        Vector3 movement = jumpDir * speed * Time.fixedDeltaTime;
+        mrigidbody.position = transform.position + movement;
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.layer == 3)
+        {
+            jumpDir = movementDir;
+        }
+    }
+
 }
