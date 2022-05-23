@@ -76,6 +76,7 @@ public class PlayerController : MonoBehaviour
     bool GroundCheck()
     {
         grounded = Physics2D.Raycast(transform.position, Vector2.down, boxHeight * 1.1f, mask);
+        Debug.Log(grounded);
         return grounded;
     }
 
