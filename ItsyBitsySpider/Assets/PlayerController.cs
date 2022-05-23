@@ -20,11 +20,16 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] float speed;
     [SerializeField] float jumpForce;
-    [SerializeField][Range(1f, 2f)] float jumpHorizontalBoost;
+    [SerializeField] [Range(1f, 2f)] float jumpHorizontalBoost;
     bool jumpHeld;
 
     float boxHeight;
     int mask;
+
+    Animator mAnimator;
+    int movingHash;
+    int groundedHash;
+    float scale;
     void EnableControls()
     {
         controls = new Controls();
@@ -40,14 +45,18 @@ public class PlayerController : MonoBehaviour
         EnableControls();
         mrigidbody = GetComponent<Rigidbody2D>();
         boxHeight = GetComponent<BoxCollider2D>().bounds.extents.y;
+        mAnimator = GetComponent<Animator>();
         mask = LayerMask.GetMask("Floor");
+        movingHash = Animator.StringToHash("Moving");
+        groundedHash = Animator.StringToHash("Grounded");
+        scale = transform.localScale.z;
     }
 
 
     private void FixedUpdate()
     {
         GroundCheck();
-        if(grounded)
+        if (grounded)
         {
             GroundMovement();
         }
@@ -58,13 +67,27 @@ public class PlayerController : MonoBehaviour
     }
     void Move(float movement)
     {
+        bool moving = true;
         movementDir.x = movement;
+        if (movementDir.x > 0)
+        {
+            transform.localScale = new Vector3(-scale, scale, scale);
+        }
+        else if(movementDir.x < 0)
+        {
+            transform.localScale = new Vector3(scale, scale, scale);
+        }
+        else
+        {
+            moving = false;
+        }
+        mAnimator.SetBool(movingHash, moving);
     }
 
     void Jump(bool pressed)
     {
         jumpHeld = pressed;
-        if(pressed && !grounded && !doubleJump)
+        if (pressed && !grounded && !doubleJump)
         {
             mrigidbody.velocity = Vector2.zero;
             jumpDir = movementDir;
@@ -76,7 +99,7 @@ public class PlayerController : MonoBehaviour
     bool GroundCheck()
     {
         grounded = Physics2D.Raycast(transform.position, Vector2.down, boxHeight * 1.1f, mask);
-        Debug.Log(grounded);
+        mAnimator.SetBool(groundedHash, grounded);
         return grounded;
     }
 
@@ -86,25 +109,26 @@ public class PlayerController : MonoBehaviour
         jumpDir = movementDir;
         Vector3 movement = movementDir * speed * Time.fixedDeltaTime;
         mrigidbody.position = transform.position + movement;
-        if(jumpHeld)
+        if (jumpHeld)
         {
             mrigidbody.AddForce(Vector2.up * jumpForce * Time.fixedDeltaTime);
         }
+        
     }
 
     void MidAirMovement()
     {
         Vector3 movement = jumpDir * jumpHorizontalBoost * speed * Time.fixedDeltaTime;
         mrigidbody.position = transform.position + movement;
-        if(doubleJump == false)
+        if (doubleJump == false)
         {
-            
+
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.layer == 3)
+        if (collision.gameObject.layer == 3)
         {
             jumpDir = movementDir;
         }
