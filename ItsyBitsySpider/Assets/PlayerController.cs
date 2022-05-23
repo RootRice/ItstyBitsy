@@ -9,6 +9,9 @@ public class PlayerController : MonoBehaviour
 
     Vector2 movementDir;
     Vector2 jumpDir;
+    Vector2 jumpVector;
+
+    bool doubleJump;
 
     Rigidbody2D mrigidbody;
     float appliedJumpForce;
@@ -17,7 +20,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] float speed;
     [SerializeField] float jumpForce;
-    [SerializeField] bool jumpHeld;
+    [SerializeField][Range(1f, 2f)] float jumpHorizontalBoost;
+    bool jumpHeld;
 
     float boxHeight;
     int mask;
@@ -59,7 +63,14 @@ public class PlayerController : MonoBehaviour
 
     void Jump(bool pressed)
     {
-        jumpHeld = pressed; 
+        jumpHeld = pressed;
+        if(pressed && !grounded && !doubleJump)
+        {
+            mrigidbody.velocity = Vector2.zero;
+            jumpDir = movementDir;
+            mrigidbody.AddForce(Vector2.up * jumpForce * Time.fixedDeltaTime);
+            doubleJump = true;
+        }
     }
 
     bool GroundCheck()
@@ -70,6 +81,7 @@ public class PlayerController : MonoBehaviour
 
     void GroundMovement()
     {
+        doubleJump = false;
         jumpDir = movementDir;
         Vector3 movement = movementDir * speed * Time.fixedDeltaTime;
         mrigidbody.position = transform.position + movement;
@@ -81,8 +93,12 @@ public class PlayerController : MonoBehaviour
 
     void MidAirMovement()
     {
-        Vector3 movement = jumpDir * speed * Time.fixedDeltaTime;
+        Vector3 movement = jumpDir * jumpHorizontalBoost * speed * Time.fixedDeltaTime;
         mrigidbody.position = transform.position + movement;
+        if(doubleJump == false)
+        {
+            
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
