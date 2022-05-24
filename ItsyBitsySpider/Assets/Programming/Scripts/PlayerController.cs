@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     Controls controls;
+    GrapplingRope myRope;
 
     Vector2 movementDir;
     Vector2 jumpDir;
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour
     bool grounded;
 
     [SerializeField] float speed;
+    [SerializeField] float swingPower;
     [SerializeField] float jumpForce;
     [SerializeField] [Range(1f, 2f)] float jumpHorizontalBoost;
     bool jumpHeld;
@@ -29,6 +31,7 @@ public class PlayerController : MonoBehaviour
     Animator mAnimator;
     int movingHash;
     int groundedHash;
+    int doubleJumpHash;
     float scale;
     void EnableControls()
     {
@@ -37,6 +40,8 @@ public class PlayerController : MonoBehaviour
         controls.Movement.Enable();
         controls.Movement.LeftRight.performed += ctx => Move(ctx.ReadValue<float>());
         controls.Movement.LeftRight.canceled += ctx => Move(0);
+        controls.Movement.xJoy.performed += ctx => Move(ctx.ReadValue<Vector2>().x);
+        controls.Movement.xJoy.canceled += ctx => Move(0);
         controls.Movement.Jump.performed += ctx => Jump(true);
         controls.Movement.Jump.canceled += ctx => Jump(false);
     }
@@ -46,9 +51,11 @@ public class PlayerController : MonoBehaviour
         mrigidbody = GetComponent<Rigidbody2D>();
         boxHeight = GetComponent<BoxCollider2D>().bounds.extents.y;
         mAnimator = GetComponent<Animator>();
+        myRope = GetComponentInChildren<GrapplingRope>();
         mask = LayerMask.GetMask("Floor");
         movingHash = Animator.StringToHash("Moving");
         groundedHash = Animator.StringToHash("Grounded");
+        doubleJumpHash = Animator.StringToHash("DoubleJump");
         scale = transform.localScale.z;
     }
 
@@ -60,6 +67,10 @@ public class PlayerController : MonoBehaviour
         {
             GroundMovement();
         }
+        else if(myRope.isGrappling)
+        {
+            
+        }
         else
         {
             MidAirMovement();
@@ -68,10 +79,10 @@ public class PlayerController : MonoBehaviour
     void Move(float movement)
     {
         bool moving = true;
-        movementDir.x = movement;
+        movementDir.x = Mathf.Round(movement);
         if (movementDir.x > 0)
         {
-            transform.localScale = new Vector3(-scale, scale, scale);
+            transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
         }
         else if(movementDir.x < 0)
         {
@@ -84,6 +95,11 @@ public class PlayerController : MonoBehaviour
         mAnimator.SetBool(movingHash, moving);
     }
 
+    void GrapplingMovement()
+    {
+        mrigidbody.AddForce(movementDir * swingPower * Time.fixedDeltaTime);
+    }
+
     void Jump(bool pressed)
     {
         jumpHeld = pressed;
@@ -91,14 +107,14 @@ public class PlayerController : MonoBehaviour
         {
             mrigidbody.velocity = Vector2.zero;
             jumpDir = movementDir;
-            mrigidbody.AddForce(Vector2.up * jumpForce * Time.fixedDeltaTime);
+            ApplyJumpForce();
             doubleJump = true;
         }
     }
 
     bool GroundCheck()
     {
-        grounded = Physics2D.Raycast(transform.position, Vector2.down, boxHeight * 1.1f, mask);
+        grounded = Physics2D.CircleCast(transform.position, boxHeight*0.6f, Vector2.down, boxHeight * 0.6f, mask);
         mAnimator.SetBool(groundedHash, grounded);
         return grounded;
     }
@@ -116,14 +132,16 @@ public class PlayerController : MonoBehaviour
         
     }
 
+    void ApplyJumpForce()
+    {
+        mrigidbody.AddForce(Vector2.up * jumpForce * Time.fixedDeltaTime);
+        mAnimator.SetTrigger(doubleJumpHash);
+    }
+
     void MidAirMovement()
     {
         Vector3 movement = jumpDir * jumpHorizontalBoost * speed * Time.fixedDeltaTime;
         mrigidbody.position = transform.position + movement;
-        if (doubleJump == false)
-        {
-
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
