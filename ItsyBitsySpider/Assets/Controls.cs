@@ -44,11 +44,29 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""xJoy"",
+                    ""type"": ""Value"",
+                    ""id"": ""6b91f354-7e6f-42c5-872d-6a99301a2750"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Grapple"",
+                    ""type"": ""Button"",
+                    ""id"": ""43f17149-ed40-4f07-b077-3b13b2ecae6e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
-                    ""name"": ""1D Axis"",
+                    ""name"": ""AD"",
                     ""id"": ""2cc6ac54-1a37-43dd-905a-51de0024483e"",
                     ""path"": ""1DAxis"",
                     ""interactions"": """",
@@ -90,6 +108,39 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72ad9902-11f9-4045-8830-d05600acaa01"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f0edd908-0ff4-4e6d-a01a-053f1cc0cc84"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""xJoy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""57b143ef-de5d-42c9-9c0c-5ca6d0b73c09"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grapple"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -100,6 +151,8 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
         m_Movement_LeftRight = m_Movement.FindAction("LeftRight", throwIfNotFound: true);
         m_Movement_Jump = m_Movement.FindAction("Jump", throwIfNotFound: true);
+        m_Movement_xJoy = m_Movement.FindAction("xJoy", throwIfNotFound: true);
+        m_Movement_Grapple = m_Movement.FindAction("Grapple", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -161,12 +214,16 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private IMovementActions m_MovementActionsCallbackInterface;
     private readonly InputAction m_Movement_LeftRight;
     private readonly InputAction m_Movement_Jump;
+    private readonly InputAction m_Movement_xJoy;
+    private readonly InputAction m_Movement_Grapple;
     public struct MovementActions
     {
         private @Controls m_Wrapper;
         public MovementActions(@Controls wrapper) { m_Wrapper = wrapper; }
         public InputAction @LeftRight => m_Wrapper.m_Movement_LeftRight;
         public InputAction @Jump => m_Wrapper.m_Movement_Jump;
+        public InputAction @xJoy => m_Wrapper.m_Movement_xJoy;
+        public InputAction @Grapple => m_Wrapper.m_Movement_Grapple;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -182,6 +239,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnJump;
+                @xJoy.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnXJoy;
+                @xJoy.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnXJoy;
+                @xJoy.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnXJoy;
+                @Grapple.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnGrapple;
+                @Grapple.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnGrapple;
+                @Grapple.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnGrapple;
             }
             m_Wrapper.m_MovementActionsCallbackInterface = instance;
             if (instance != null)
@@ -192,6 +255,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @xJoy.started += instance.OnXJoy;
+                @xJoy.performed += instance.OnXJoy;
+                @xJoy.canceled += instance.OnXJoy;
+                @Grapple.started += instance.OnGrapple;
+                @Grapple.performed += instance.OnGrapple;
+                @Grapple.canceled += instance.OnGrapple;
             }
         }
     }
@@ -200,5 +269,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     {
         void OnLeftRight(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnXJoy(InputAction.CallbackContext context);
+        void OnGrapple(InputAction.CallbackContext context);
     }
 }
