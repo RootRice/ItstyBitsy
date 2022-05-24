@@ -121,9 +121,9 @@ public class GrapplingGun : MonoBehaviour
     void SetGrapplePoint()
     {
         Vector2 distanceVector = lookDirection;
-        if (Physics2D.Raycast(firePoint.position, distanceVector.normalized, 20f, mask))
+        if (Physics2D.Raycast(firePoint.position, distanceVector.normalized, maxDistnace, mask))
         {
-            RaycastHit2D _hit = Physics2D.Raycast(firePoint.position, distanceVector.normalized, 20f, mask);
+            RaycastHit2D _hit = Physics2D.Raycast(firePoint.position, distanceVector.normalized, maxDistnace, mask);
             debugCube.transform.position = _hit.point;
             if (_hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
             {

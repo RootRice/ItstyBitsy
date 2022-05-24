@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 7
-  swingPower: 0
+  swingPower: 500
   jumpForce: 90000
   jumpHorizontalBoost: 1.513
 --- !u!231 &865664759839846275
@@ -263,7 +263,7 @@ MonoBehaviour:
   rotateOverTime: 1
   rotationSpeed: 18.3
   hasMaxDistance: 1
-  maxDistnace: 20
+  maxDistnace: 40
   launchToPoint: 1
   launchType: 1
   launchSpeed: 1
@@ -357,7 +357,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 35a1e7a7f5f361845982aed77f50c95a, type: 2}
+  - {fileID: 2100000, guid: f49c740088539dd41829ccdc16ec7b92, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

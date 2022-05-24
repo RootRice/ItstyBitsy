@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
         }
         else if(myRope.isGrappling)
         {
-            
+            GrapplingMovement();
         }
         else
         {
@@ -97,6 +97,7 @@ public class PlayerController : MonoBehaviour
 
     void GrapplingMovement()
     {
+        jumpDir = movementDir;
         mrigidbody.AddForce(movementDir * swingPower * Time.fixedDeltaTime);
     }
 
