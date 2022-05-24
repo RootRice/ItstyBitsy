@@ -13,7 +13,7 @@ public class WaterEditor : MonoBehaviour
     [SerializeField] float wavyness;
     [SerializeField] public float waveHeight;
     [SerializeField] int waveResolution;
-    [SerializeField] float timeOffset;
+    [SerializeField] public float timeOffset;
     [SerializeField] float test;
 
 

@@ -644,10 +644,10 @@ MonoBehaviour:
   - 0.4
   minOffsets:
   - -0.1
-  - -0.4
+  - -0.2
   changeSpeed:
-  - 1
-  - 1
+  - 0.67
+  - 0.32
   timerRange: 0.6
   maxHeightOffsetRange:
   - 0.5
@@ -655,6 +655,15 @@ MonoBehaviour:
   speedRange:
   - 60
   - 90
+  maxTimeOffsets:
+  - 0.3
+  - 0.6
+  minTimeOffsets:
+  - 0
+  - -0.6
+  timeChangeSpeed:
+  - 0.1
+  - 0.1
 --- !u!4 &313464880
 Transform:
   m_ObjectHideFlags: 0
@@ -2021,7 +2030,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713625215}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

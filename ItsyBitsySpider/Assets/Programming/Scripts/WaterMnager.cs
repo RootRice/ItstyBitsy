@@ -24,6 +24,11 @@ public class WaterMnager : MonoBehaviour
     Vector3[] waterPositions;
     float heightOffset;
     int heightDir = 1;
+    [Header("TimeOffsets")]
+    [SerializeField] float[] maxTimeOffsets;
+    [SerializeField] float[] minTimeOffsets;
+    [SerializeField] float[] timeChangeSpeed;
+    float[] timeOffsets;
 
     float vel;
 
@@ -36,13 +41,14 @@ public class WaterMnager : MonoBehaviour
         dir = new int[2];
         waterTransforms = new Transform[2];
         waterPositions = new Vector3[2];
+        timeOffsets = new float[2];
         for (int i = 0; i < waters.Length; i++)
         {
             originalHeights[i] = waters[i].waveHeight;
             dir[i] = Random.Range(0, 2) * 2 - 1;
             timeLimits[i] = Random.Range(0f, timerRange);
             waterTransforms[i] = waters[i].transform;
-            waterPositions[i] = waterTransforms[i].position;
+            waterPositions[i] = waterTransforms[i].localPosition;
             speed = Random.Range(speedRange[0], speedRange[1]);
             targetOffset = Random.Range(maxHeightOffsetRange[0], maxHeightOffsetRange[1]);
         }
@@ -63,8 +69,10 @@ public class WaterMnager : MonoBehaviour
             }
             waveOffsets[i] = Mathf.Clamp(waveOffsets[i] + Time.deltaTime * dir[i] * changeSpeed[i], minOffsets[i], maxOffsets[i]);
             waters[i].waveHeight = originalHeights[i] + waveOffsets[i];
+            timeOffsets[i] = Mathf.Clamp(timeOffsets[i] + Time.deltaTime * dir[i] * timeChangeSpeed[i], minTimeOffsets[i], maxTimeOffsets[i]);
+            waters[i].timeOffset = 0 + timeOffsets[i];
 
-            
+
         }
         //Water height
         heightOffset = Mathf.SmoothDamp(heightOffset, targetOffset * heightDir, ref vel, Time.deltaTime*speed);
@@ -74,8 +82,8 @@ public class WaterMnager : MonoBehaviour
             targetOffset = Random.Range(maxHeightOffsetRange[0], maxHeightOffsetRange[1]);
             heightDir *= -1;
         }
-        waterTransforms[0].position = waterPositions[0] + Vector3.up * heightOffset;
-        waterTransforms[1].position = waterPositions[1] + Vector3.up * -heightOffset;
+        waterTransforms[0].localPosition = waterPositions[0] + Vector3.up * heightOffset;
+        waterTransforms[1].localPosition = waterPositions[1] + Vector3.up * -heightOffset;
     }
 
     void Water1()
