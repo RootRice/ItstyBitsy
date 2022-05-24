@@ -57,6 +57,7 @@ public class PlayerController : MonoBehaviour
         groundedHash = Animator.StringToHash("Grounded");
         doubleJumpHash = Animator.StringToHash("DoubleJump");
         scale = transform.localScale.z;
+        GameplayManager.spiderHeight = transform.position.y;
     }
 
 
@@ -75,6 +76,7 @@ public class PlayerController : MonoBehaviour
         {
             MidAirMovement();
         }
+        GameplayManager.spiderHeight = transform.position.y;
     }
     void Move(float movement)
     {
@@ -86,7 +88,7 @@ public class PlayerController : MonoBehaviour
         }
         else if(movementDir.x < 0)
         {
-            transform.localScale = new Vector3(scale, scale, scale);
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
         }
         else
         {

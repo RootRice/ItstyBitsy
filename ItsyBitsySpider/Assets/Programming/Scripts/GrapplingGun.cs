@@ -42,6 +42,8 @@ public class GrapplingGun : MonoBehaviour
     [SerializeField] private bool autoConfigureDistance = false;
     [SerializeField] private float targetDistance = 3;
     [SerializeField] private float targetFrequncy = 1;
+    [Header("Other")]
+    [SerializeField] [Range(0, 2.0f)] float forgiveness;
 
     [HideInInspector] public Vector2 grapplePoint;
     [HideInInspector] public Vector2 grappleDistanceVector;
@@ -100,6 +102,15 @@ public class GrapplingGun : MonoBehaviour
         else
         {
             RotateGun(lookDirection, true);
+            if (Physics2D.CircleCast(firePoint.position, forgiveness, lookDirection.normalized, maxDistnace, mask))
+            {
+                RaycastHit2D _hit = Physics2D.CircleCast(firePoint.position, forgiveness, lookDirection.normalized, maxDistnace, mask);
+                debugCube.transform.position = _hit.point;
+            }
+            else
+            {
+                debugCube.transform.position = Vector3.one * -1000f;
+            }
         }
     }
 
@@ -121,9 +132,9 @@ public class GrapplingGun : MonoBehaviour
     void SetGrapplePoint()
     {
         Vector2 distanceVector = lookDirection;
-        if (Physics2D.Raycast(firePoint.position, distanceVector.normalized, maxDistnace, mask))
+        if (Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace, mask))
         {
-            RaycastHit2D _hit = Physics2D.Raycast(firePoint.position, distanceVector.normalized, maxDistnace, mask);
+            RaycastHit2D _hit = Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace, mask);
             debugCube.transform.position = _hit.point;
             if (_hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
             {
