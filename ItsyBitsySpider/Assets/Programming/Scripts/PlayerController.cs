@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D mrigidbody;
     float timeOfLastJump;
 
-    bool grounded = true;
+    public bool grounded = true;
 
     [SerializeField] float speed;
     [SerializeField] float swingPower;
@@ -150,7 +150,32 @@ public class PlayerController : MonoBehaviour
 
     bool GroundCheck()
     {
-        grounded = Physics2D.CircleCast(transform.position, boxHeight*0.95f, Vector2.down, boxHeight * 0.1f, mask);
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, boxHeight, Vector2.down, boxHeight * 0.1f, mask);
+        foreach(RaycastHit2D hit in hits)
+        {
+            if (hit)
+            {
+                if (hit.point.y < transform.position.y)
+                {
+                    grounded = true;
+                    break;
+                }
+                else
+                {
+                    grounded = false;
+                }
+            }
+            else
+            {
+                grounded = false;
+            }
+        }
+        if(hits.Length == 0)
+        {
+            grounded = false;
+        }
+        
+        
         mAnimator.SetBool(groundedHash, grounded);
         return grounded;
     }

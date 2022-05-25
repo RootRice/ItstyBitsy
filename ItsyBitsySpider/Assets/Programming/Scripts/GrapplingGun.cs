@@ -165,7 +165,7 @@ public class GrapplingGun : MonoBehaviour
         }
     }
 
-    void SetGrapplePoint()
+    public void SetGrapplePoint()
     {
         Vector2 distanceVector = lookDirection;
         RaycastHit2D hit = Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace,mask);
@@ -195,6 +195,40 @@ public class GrapplingGun : MonoBehaviour
             }
         }
         
+    }
+
+    public void SetGrapplePoint(Vector2 overrideVec)
+    {
+        r1Pressed = true;
+        controls.Disable();
+        Vector2 distanceVector = overrideVec;
+        RaycastHit2D hit = Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace, mask);
+        Vector2 hitVector = hit.point - new Vector2(firePoint.position.x, firePoint.position.y);
+        RaycastHit2D clearCheck = Physics2D.CircleCast(firePoint.position, 0.1f, hitVector.normalized, maxDistnace, blockMask);
+        if (clearCheck | !hit)
+            return;
+
+        if (hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
+        {
+            if (Vector2.Distance(hit.point, firePoint.position) <= maxDistnace || !hasMaxDistance)
+            {
+                target = hit.transform;
+                grapplePoint = hit.point;
+                offset = new Vector3(grapplePoint.x, grapplePoint.y, 0) - target.position;
+                grappleDistanceVector = grapplePoint - (Vector2)gunPivot.position;
+                grappleRope.enabled = true;
+                if (hit.transform.gameObject.CompareTag("Moving"))
+                {
+                    movingTarget = true;
+                }
+                else
+                {
+                    movingTarget = false;
+                }
+
+            }
+        }
+
     }
 
     public void Grapple()

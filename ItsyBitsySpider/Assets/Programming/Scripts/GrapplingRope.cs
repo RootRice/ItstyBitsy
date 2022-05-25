@@ -92,10 +92,6 @@ public class
                 DrawRopeNoWaves();
             }
         }
-        if(strightLine)
-        {
-
-        }
     }
     void UpdateRope()
     {
