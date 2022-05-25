@@ -98,6 +98,11 @@ public class WaterMnager : MonoBehaviour
         
         elapsedTime += Time.deltaTime;//Time.deltaTime * (elapsedTime-endLevelSpeed) * (elapsedTime - endLevelSpeed);
         transform.position = new Vector3(transform.position.x, height, transform.position.z);
+        if(elapsedTime > 2.3f)
+        {
+            GameplayManager.EndLevel();
+        }
+        
     }
     // Update is called once per frame
     void Update()
