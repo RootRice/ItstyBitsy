@@ -65,7 +65,7 @@ public class GrapplingGun : MonoBehaviour
         controls.Movement.Grapple.canceled += ctx => r1Pressed = false;
         controls.Movement.xJoy.performed += ctx => SetDirection(ctx.ReadValue<Vector2>());
     }
-    void DisableControls()
+    public void DisableControls()
     {
         controls.Enable();
         controls.Movement.Enable();
