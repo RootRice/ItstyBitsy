@@ -8,6 +8,7 @@ public class FallingPlatform : MonoBehaviour
     bool shouldFall;
     float timer;
     Vector2 origPos;
+    float timeOfImpact;
     [SerializeField] bool fallAfterPlayerLeaves;
     [SerializeField] float timeBeforeFall;
     private void Start()
@@ -24,8 +25,12 @@ public class FallingPlatform : MonoBehaviour
             timer += Time.deltaTime;
             if(timer > timeBeforeFall)
             {
+                transform.position += Vector3.forward * 0.1f;
                 GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-                GetComponent<BoxCollider2D>().enabled = false;
+                foreach (BoxCollider2D c in GetComponentsInChildren<BoxCollider2D>())
+                {
+                    c.enabled = false;
+                }
                 shouldFall = false;
             }
         }
@@ -34,6 +39,10 @@ public class FallingPlatform : MonoBehaviour
     {
         if (collision.transform.position.y > transform.position.y+colliderHeight*0.9f && collision.gameObject.CompareTag("Player"))
         {
+            if(!shouldFall)
+            {
+                timeOfImpact = Time.timeSinceLevelLoad;
+            }
             shouldFall = true;
         }
     }
@@ -42,12 +51,16 @@ public class FallingPlatform : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && fallAfterPlayerLeaves && shouldFall)
+        if (collision.gameObject.CompareTag("Player") && fallAfterPlayerLeaves && shouldFall && Time.timeSinceLevelLoad - timeOfImpact > 0.05f)
         {
             Rigidbody2D mRigidbody = GetComponent<Rigidbody2D>();
             mRigidbody.bodyType = RigidbodyType2D.Dynamic;
             mRigidbody.AddForceAtPosition(collision.gameObject.transform.position, Vector2.down* 0.3f);
-            GetComponent<BoxCollider2D>().enabled = false;
+            transform.position += Vector3.forward * -0.1f;
+            foreach (BoxCollider2D c in GetComponentsInChildren<BoxCollider2D>())
+            {
+                c.enabled = false;
+            }
             shouldFall = false;
         }
     }

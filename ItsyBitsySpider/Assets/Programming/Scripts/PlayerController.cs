@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     bool doubleJump;
 
     Rigidbody2D mrigidbody;
-    float appliedJumpForce;
+    float timeOfLastJump;
 
     bool grounded = true;
 
@@ -51,7 +51,6 @@ public class PlayerController : MonoBehaviour
     }
     void DisableControls()
     {
-
         controls.Enable();
         controls.Movement.Enable();
         controls.Movement.LeftRight.performed -= ctx => Move(ctx.ReadValue<float>());
@@ -151,7 +150,7 @@ public class PlayerController : MonoBehaviour
 
     bool GroundCheck()
     {
-        grounded = Physics2D.CircleCast(transform.position, boxHeight*0.6f, Vector2.down, boxHeight * 0.6f, mask);
+        grounded = Physics2D.CircleCast(transform.position, boxHeight*0.95f, Vector2.down, boxHeight * 0.1f, mask);
         mAnimator.SetBool(groundedHash, grounded);
         return grounded;
     }
@@ -162,8 +161,9 @@ public class PlayerController : MonoBehaviour
         jumpDir = movementDir;
         Vector3 movement = movementDir * speed * Time.fixedDeltaTime;
         mrigidbody.position = transform.position + movement;
-        if (jumpHeld)
+        if (jumpHeld && Time.timeSinceLevelLoad - timeOfLastJump > 0.25f)
         {
+            timeOfLastJump = Time.timeSinceLevelLoad;
             mrigidbody.AddForce(Vector2.up * jumpForce * Time.fixedDeltaTime);
         }
         

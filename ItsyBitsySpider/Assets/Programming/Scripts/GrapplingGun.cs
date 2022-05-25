@@ -53,6 +53,7 @@ public class GrapplingGun : MonoBehaviour
     Vector2 lookDirection = Vector2.up;
     GameObject debugCube;
     int mask;
+    int blockMask;
     float gravScale;
     private void Awake()
     {
@@ -83,6 +84,7 @@ public class GrapplingGun : MonoBehaviour
         m_springJoint2D.enabled = false;
         debugCube = GameObject.Find("DebugCube");
         mask = LayerMask.GetMask("Grapple");
+        blockMask = LayerMask.GetMask("Block");
         gravScale = m_rigidbody.gravityScale;
     }
 
@@ -113,7 +115,7 @@ public class GrapplingGun : MonoBehaviour
         else
         {
             RotateGun(lookDirection, true);
-            if (Physics2D.CircleCast(firePoint.position, forgiveness, lookDirection.normalized, maxDistnace, mask))
+            if (Physics2D.CircleCast(firePoint.position, forgiveness, lookDirection.normalized, maxDistnace, mask) && !Physics2D.CircleCast(firePoint.position, 0.1f, lookDirection.normalized, maxDistnace, blockMask))
             {
                 RaycastHit2D _hit = Physics2D.CircleCast(firePoint.position, forgiveness, lookDirection.normalized, maxDistnace, mask);
 
@@ -144,19 +146,22 @@ public class GrapplingGun : MonoBehaviour
     void SetGrapplePoint()
     {
         Vector2 distanceVector = lookDirection;
-        if (Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace, mask))
-        {
-            RaycastHit2D _hit = Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace, mask);
-            if (_hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
+        RaycastHit2D hit = Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace,mask);
+        Vector2 hitVector = hit.point - new Vector2(firePoint.position.x, firePoint.position.y);
+        RaycastHit2D clearCheck = Physics2D.CircleCast(firePoint.position, 0.1f,hitVector.normalized, maxDistnace,blockMask);
+        if (clearCheck | !hit)
+            return;
+
+            if (hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
             {
-                if (Vector2.Distance(_hit.point, firePoint.position) <= maxDistnace || !hasMaxDistance)
+                if (Vector2.Distance(hit.point, firePoint.position) <= maxDistnace || !hasMaxDistance)
                 {
-                    grapplePoint = _hit.point;
+                    grapplePoint = hit.point;
                     grappleDistanceVector = grapplePoint - (Vector2)gunPivot.position;
                     grappleRope.enabled = true;
                 }
             }
-        }
+        
     }
 
     public void Grapple()
