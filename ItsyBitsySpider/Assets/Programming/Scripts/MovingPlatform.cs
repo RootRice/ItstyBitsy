@@ -7,6 +7,8 @@ public class MovingPlatform : MonoBehaviour
     [SerializeField] Vector2[] patrolPoints;
     [SerializeField] Transform snailTransform;
     [SerializeField] float speed;
+    [SerializeField] bool loops;
+    int dir = 1;
 
     int curTarget = 1;
     private void Start()
@@ -22,10 +24,18 @@ public class MovingPlatform : MonoBehaviour
         snailTransform.rotation = Quaternion.RotateTowards(snailTransform.rotation, targetRotation, 40*speed * Time.deltaTime);
         if (new Vector2(snailTransform.transform.localPosition.x, snailTransform.transform.localPosition.y) == patrolPoints[curTarget])
         {
-            curTarget += 1;
+            curTarget += 1 *dir;
             if(curTarget == patrolPoints.Length)
             {
-                curTarget = 0;
+                if(loops)
+                {
+                    curTarget = 0;
+                }
+                else
+                {
+                    dir = -dir;
+                    curTarget += 2 * dir;
+                }
             }
         }
     }

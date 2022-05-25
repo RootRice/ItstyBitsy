@@ -55,6 +55,9 @@ public class GrapplingGun : MonoBehaviour
     int mask;
     int blockMask;
     float gravScale;
+    bool movingTarget;
+    Transform target;
+    Vector3 offset;
     private void Awake()
     {
         controls = new Controls();
@@ -87,7 +90,19 @@ public class GrapplingGun : MonoBehaviour
         blockMask = LayerMask.GetMask("Block");
         gravScale = m_rigidbody.gravityScale;
     }
+    void UpdateGrapplePoint()
+    {
+        m_springJoint2D.connectedAnchor = target.position + offset;
+    }
 
+    public Vector3 GetTargetDynamic()
+    {
+        if(movingTarget)
+        {
+            return target.position + offset;
+        }
+        return grapplePoint;
+    }
     private void Update()
     {
         
@@ -96,6 +111,11 @@ public class GrapplingGun : MonoBehaviour
             if (grappleRope.enabled)
             {
                 RotateGun(grapplePoint, false);
+                debugCube.transform.position = Vector3.one * 1000;
+                if (movingTarget)
+                {
+                    UpdateGrapplePoint();
+                }
             }
             else
             {
@@ -109,7 +129,9 @@ public class GrapplingGun : MonoBehaviour
                     Vector2 firePointDistnace = firePoint.position - gunHolder.localPosition;
                     Vector2 targetPos = grapplePoint - firePointDistnace;
                     gunHolder.position = Vector2.Lerp(gunHolder.position, targetPos, Time.deltaTime * launchSpeed);
+                    
                 }
+                
             }
         }
         else
@@ -152,15 +174,26 @@ public class GrapplingGun : MonoBehaviour
         if (clearCheck | !hit)
             return;
 
-            if (hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
+        if (hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
+        {
+            if (Vector2.Distance(hit.point, firePoint.position) <= maxDistnace || !hasMaxDistance)
             {
-                if (Vector2.Distance(hit.point, firePoint.position) <= maxDistnace || !hasMaxDistance)
+                target = hit.transform;
+                grapplePoint = hit.point;
+                offset = new Vector3(grapplePoint.x, grapplePoint.y, 0) - target.position;
+                grappleDistanceVector = grapplePoint - (Vector2)gunPivot.position;
+                grappleRope.enabled = true;
+                if (hit.transform.gameObject.CompareTag("Moving"))
                 {
-                    grapplePoint = hit.point;
-                    grappleDistanceVector = grapplePoint - (Vector2)gunPivot.position;
-                    grappleRope.enabled = true;
+                    movingTarget = true;
                 }
+                else
+                {
+                    movingTarget = false;
+                }
+
             }
+        }
         
     }
 

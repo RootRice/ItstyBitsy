@@ -92,6 +92,18 @@ public class
                 DrawRopeNoWaves();
             }
         }
+        if(strightLine)
+        {
+
+        }
+    }
+    void UpdateRope()
+    {
+        for (int i = 0; i < percision-1; i++)
+        {
+            m_lineRenderer.SetPosition(i, grapplingGun.firePoint.position);
+        }
+        m_lineRenderer.SetPosition(percision-1, grapplingGun.GetTargetDynamic());
     }
 
     void DrawRopeWaves()
@@ -110,7 +122,7 @@ public class
     void DrawRopeNoWaves()
     {
         m_lineRenderer.SetPosition(0, grapplingGun.firePoint.position);
-        m_lineRenderer.SetPosition(1, grapplingGun.grapplePoint);
+        m_lineRenderer.SetPosition(1, grapplingGun.GetTargetDynamic());
     }
 }
 
