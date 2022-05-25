@@ -114,7 +114,7 @@ public class PlayerController : MonoBehaviour
     void Move(float movement)
     {
         bool moving = true;
-        movementDir.x = Mathf.Round(movement) * movementMod;
+        movementDir.x = Mathf.Round(movement);
         if (movementDir.x > 0)
         {
             transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
@@ -184,7 +184,7 @@ public class PlayerController : MonoBehaviour
     {
         doubleJump = false;
         jumpDir = movementDir;
-        Vector3 movement = movementDir * speed * Time.fixedDeltaTime;
+        Vector3 movement = movementDir * speed * Time.fixedDeltaTime * movementMod;
         mrigidbody.position = transform.position + movement;
         if (jumpHeld && Time.timeSinceLevelLoad - timeOfLastJump > 0.25f)
         {

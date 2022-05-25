@@ -21,7 +21,7 @@ public class FallingPlatform : MonoBehaviour
     {
         if (shouldFall && !fallAfterPlayerLeaves)
         {
-            transform.position = origPos + new Vector2(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f));
+            transform.position = origPos + new Vector2(Random.Range(-0.2f, 0.2f), Random.Range(-0.1f, 0.1f));
             timer += Time.deltaTime;
             if(timer > timeBeforeFall)
             {

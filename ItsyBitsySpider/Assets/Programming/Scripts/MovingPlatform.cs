@@ -37,6 +37,12 @@ public class MovingPlatform : MonoBehaviour
                     curTarget += 2 * dir;
                 }
             }
+            if(curTarget == -1)
+            {
+                curTarget += 2;
+                dir = -dir;
+            }
+
         }
     }
 

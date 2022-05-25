@@ -58,6 +58,7 @@ public class GrapplingGun : MonoBehaviour
     bool movingTarget;
     Transform target;
     Vector3 offset;
+    public bool pull;
     private void Awake()
     {
         controls = new Controls();
@@ -65,6 +66,8 @@ public class GrapplingGun : MonoBehaviour
         controls.Movement.Enable();
         controls.Movement.Grapple.performed += ctx => Fire();
         controls.Movement.Grapple.performed += ctx => r1Pressed = true;
+        controls.Movement.Freeze.performed += ctx => SetFreeze(true);
+        controls.Movement.Freeze.canceled += ctx => SetFreeze(false);
         controls.Movement.Grapple.canceled += ctx => Release();
         controls.Movement.Grapple.canceled += ctx => r1Pressed = false;
         controls.Movement.xJoy.performed += ctx => SetDirection(ctx.ReadValue<Vector2>());
@@ -77,9 +80,15 @@ public class GrapplingGun : MonoBehaviour
         controls.Movement.Grapple.performed -= ctx => r1Pressed = true;
         controls.Movement.Grapple.canceled -= ctx => Release();
         controls.Movement.Grapple.canceled -= ctx => r1Pressed = false;
+        controls.Movement.Freeze.performed -= ctx => SetFreeze(true);
+        controls.Movement.Freeze.canceled -= ctx => SetFreeze(false);
         controls.Movement.xJoy.performed -= ctx => SetDirection(ctx.ReadValue<Vector2>());
         controls.Movement.Disable();
         controls.Disable();
+    }
+    void SetFreeze(bool b)
+    {
+        pull = b;
     }
     private void Start()
     {
@@ -93,6 +102,7 @@ public class GrapplingGun : MonoBehaviour
     void UpdateGrapplePoint()
     {
         m_springJoint2D.connectedAnchor = target.position + offset;
+        
     }
 
     public Vector3 GetTargetDynamic()
@@ -110,8 +120,17 @@ public class GrapplingGun : MonoBehaviour
         {
             if (grappleRope.enabled)
             {
+
                 RotateGun(grapplePoint, false);
                 debugCube.transform.position = Vector3.one * 1000;
+                if (pull)
+                {
+                    m_springJoint2D.frequency = 2.0f;
+                }
+                else
+                {
+                    m_springJoint2D.frequency = launchSpeed;
+                }
                 if (movingTarget)
                 {
                     UpdateGrapplePoint();
@@ -136,17 +155,31 @@ public class GrapplingGun : MonoBehaviour
         }
         else
         {
-            RotateGun(lookDirection, true);
-            if (Physics2D.CircleCast(firePoint.position, forgiveness, lookDirection.normalized, maxDistnace, mask) && !Physics2D.CircleCast(firePoint.position, 0.1f, lookDirection.normalized, maxDistnace, blockMask))
-            {
-                RaycastHit2D _hit = Physics2D.CircleCast(firePoint.position, forgiveness, lookDirection.normalized, maxDistnace, mask);
-
-                debugCube.transform.position = new Vector3(_hit.point.x, _hit.point.y, -0.4f);
-            }
-            else
+            Vector2 distanceVector = lookDirection;
+            RaycastHit2D hit = Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace, mask);
+            if(!hit)
             {
                 debugCube.transform.position = Vector3.one * -1000f;
+                return;
             }
+
+            if (hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
+            {
+                Vector2 hitVector = hit.point - new Vector2(firePoint.position.x, firePoint.position.y);
+                RaycastHit2D clearCheck = Physics2D.CircleCast(firePoint.position, 0.1f, hitVector.normalized, (new Vector3(hit.point.x, hit.point.y, 0) - firePoint.position).magnitude, blockMask);
+                if (clearCheck | !hit)
+                {
+                    debugCube.transform.position = Vector3.one * -1000f;
+                    return;
+                }
+                if (Vector2.Distance(hit.point, firePoint.position) <= maxDistnace || !hasMaxDistance)
+                {
+                    debugCube.transform.position = new Vector3(hit.point.x, hit.point.y, -0.4f);
+
+                }
+            }
+            RotateGun(lookDirection, true);
+            
         }
     }
 
@@ -169,13 +202,15 @@ public class GrapplingGun : MonoBehaviour
     {
         Vector2 distanceVector = lookDirection;
         RaycastHit2D hit = Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace,mask);
-        Vector2 hitVector = hit.point - new Vector2(firePoint.position.x, firePoint.position.y);
-        RaycastHit2D clearCheck = Physics2D.CircleCast(firePoint.position, 0.1f,hitVector.normalized, maxDistnace,blockMask);
-        if (clearCheck | !hit)
+        if (!hit)
             return;
 
         if (hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
         {
+            Vector2 hitVector = hit.point - new Vector2(firePoint.position.x, firePoint.position.y);
+            RaycastHit2D clearCheck = Physics2D.CircleCast(firePoint.position, 0.1f, hitVector.normalized, (new Vector3(hit.point.x, hit.point.y, 0) - firePoint.position).magnitude, blockMask);
+            if (clearCheck | !hit)
+                return;
             if (Vector2.Distance(hit.point, firePoint.position) <= maxDistnace || !hasMaxDistance)
             {
                 target = hit.transform;
