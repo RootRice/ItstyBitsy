@@ -17,12 +17,13 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D mrigidbody;
     float appliedJumpForce;
 
-    bool grounded;
+    bool grounded = true;
 
     [SerializeField] float speed;
     [SerializeField] float swingPower;
     [SerializeField] float jumpForce;
     [SerializeField] [Range(1f, 2f)] float jumpHorizontalBoost;
+    float movementMod = 1.0f;
     bool jumpHeld;
 
     float boxHeight;
@@ -32,6 +33,7 @@ public class PlayerController : MonoBehaviour
     int movingHash;
     int groundedHash;
     int doubleJumpHash;
+    int holdingHash;
     void EnableControls()
     {
         controls = new Controls();
@@ -43,6 +45,9 @@ public class PlayerController : MonoBehaviour
         controls.Movement.xJoy.canceled += ctx => Move(0);
         controls.Movement.Jump.performed += ctx => Jump(true);
         controls.Movement.Jump.canceled += ctx => Jump(false);
+        controls.Movement.Freeze.performed += ctx => FreezeMovement(0);
+        controls.Movement.Freeze.canceled += ctx => FreezeMovement(1);
+
     }
     void DisableControls()
     {
@@ -55,6 +60,8 @@ public class PlayerController : MonoBehaviour
         controls.Movement.xJoy.canceled -= ctx => Move(0);
         controls.Movement.Jump.performed -= ctx => Jump(true);
         controls.Movement.Jump.canceled -= ctx => Jump(false);
+        controls.Movement.Freeze.performed -= ctx => FreezeMovement(0);
+        controls.Movement.Freeze.canceled -= ctx => FreezeMovement(1);
         controls.Disable();
         controls.Movement.Disable();
     }
@@ -69,10 +76,24 @@ public class PlayerController : MonoBehaviour
         movingHash = Animator.StringToHash("Moving");
         groundedHash = Animator.StringToHash("Grounded");
         doubleJumpHash = Animator.StringToHash("DoubleJump");
+        holdingHash = Animator.StringToHash("Holding");
+        mAnimator.SetBool(holdingHash, false);
         GameplayManager.spiderHeight = transform.position.y;
     }
 
-
+    void FreezeMovement(float m)
+    {
+        movementMod = m;
+        if(m > 0)
+        {
+            mAnimator.SetBool(holdingHash, false);
+                
+        }
+        else
+        {
+            mAnimator.SetBool(holdingHash, true);
+        }
+    }
 
     private void FixedUpdate()
     {
@@ -94,7 +115,7 @@ public class PlayerController : MonoBehaviour
     void Move(float movement)
     {
         bool moving = true;
-        movementDir.x = Mathf.Round(movement);
+        movementDir.x = Mathf.Round(movement) * movementMod;
         if (movementDir.x > 0)
         {
             transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
