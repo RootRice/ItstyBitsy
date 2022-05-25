@@ -32,7 +32,6 @@ public class PlayerController : MonoBehaviour
     int movingHash;
     int groundedHash;
     int doubleJumpHash;
-    float scale;
     void EnableControls()
     {
         controls = new Controls();
@@ -45,7 +44,21 @@ public class PlayerController : MonoBehaviour
         controls.Movement.Jump.performed += ctx => Jump(true);
         controls.Movement.Jump.canceled += ctx => Jump(false);
     }
-    private void Awake()
+    void DisableControls()
+    {
+
+        controls.Enable();
+        controls.Movement.Enable();
+        controls.Movement.LeftRight.performed -= ctx => Move(ctx.ReadValue<float>());
+        controls.Movement.LeftRight.canceled -= ctx => Move(0);
+        controls.Movement.xJoy.performed -= ctx => Move(ctx.ReadValue<Vector2>().x);
+        controls.Movement.xJoy.canceled -= ctx => Move(0);
+        controls.Movement.Jump.performed -= ctx => Jump(true);
+        controls.Movement.Jump.canceled -= ctx => Jump(false);
+        controls.Disable();
+        controls.Movement.Disable();
+    }
+    private void Start()
     {
         EnableControls();
         mrigidbody = GetComponent<Rigidbody2D>();
@@ -56,9 +69,9 @@ public class PlayerController : MonoBehaviour
         movingHash = Animator.StringToHash("Moving");
         groundedHash = Animator.StringToHash("Grounded");
         doubleJumpHash = Animator.StringToHash("DoubleJump");
-        scale = transform.localScale.z;
         GameplayManager.spiderHeight = transform.position.y;
     }
+
 
 
     private void FixedUpdate()
@@ -106,13 +119,13 @@ public class PlayerController : MonoBehaviour
     void Jump(bool pressed)
     {
         jumpHeld = pressed;
-        if (pressed && !grounded && !doubleJump)
-        {
-            mrigidbody.velocity = Vector2.zero;
-            jumpDir = movementDir;
-            ApplyJumpForce();
-            doubleJump = true;
-        }
+        //if (pressed && !grounded && !doubleJump)
+        //{
+        //    mrigidbody.velocity = Vector2.zero;
+        //    jumpDir = movementDir;
+        //    ApplyJumpForce();
+        //    doubleJump = true;
+        //}
     }
 
     bool GroundCheck()
@@ -155,4 +168,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        DisableControls();
+    }
 }

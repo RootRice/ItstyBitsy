@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameplayManager : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class GameplayManager : MonoBehaviour
     static bool win;
     static bool lose;
 
+    [SerializeField] float transitionTime;
+    float timer;
+
     Image winImage;
     Image loseImage;
 
@@ -20,7 +24,11 @@ public class GameplayManager : MonoBehaviour
     {
         myWater = GameObject.FindGameObjectWithTag("WaterManager").GetComponent<WaterMnager>();
         winImage = GameObject.Find("WinImage").GetComponent<Image>();
-        loseImage = GameObject.Find("WinImage").GetComponent<Image>();
+        loseImage = GameObject.Find("LoseImage").GetComponent<Image>();
+        endLevel = false;
+        win = false;
+        lose = false;
+
     }
 
     // Update is called once per frame
@@ -35,7 +43,11 @@ public class GameplayManager : MonoBehaviour
             if(lose)
             {
                 loseImage.color += new Color(0, 0, 0, 1 * Time.deltaTime*2);
-
+                timer += Time.deltaTime;
+                if (timer > transitionTime)
+                {
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                }
             }
         }
         if(win)
@@ -67,4 +79,6 @@ public class GameplayManager : MonoBehaviour
         }
         endLevel = true;
     }
+
+
 }

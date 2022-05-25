@@ -65,7 +65,18 @@ public class GrapplingGun : MonoBehaviour
         controls.Movement.Grapple.canceled += ctx => r1Pressed = false;
         controls.Movement.xJoy.performed += ctx => SetDirection(ctx.ReadValue<Vector2>());
     }
-
+    void DisableControls()
+    {
+        controls.Enable();
+        controls.Movement.Enable();
+        controls.Movement.Grapple.performed -= ctx => Fire();
+        controls.Movement.Grapple.performed -= ctx => r1Pressed = true;
+        controls.Movement.Grapple.canceled -= ctx => Release();
+        controls.Movement.Grapple.canceled -= ctx => r1Pressed = false;
+        controls.Movement.xJoy.performed -= ctx => SetDirection(ctx.ReadValue<Vector2>());
+        controls.Movement.Disable();
+        controls.Disable();
+    }
     private void Start()
     {
         grappleRope.enabled = false;
@@ -105,7 +116,8 @@ public class GrapplingGun : MonoBehaviour
             if (Physics2D.CircleCast(firePoint.position, forgiveness, lookDirection.normalized, maxDistnace, mask))
             {
                 RaycastHit2D _hit = Physics2D.CircleCast(firePoint.position, forgiveness, lookDirection.normalized, maxDistnace, mask);
-                debugCube.transform.position = _hit.point;
+
+                debugCube.transform.position = new Vector3(_hit.point.x, _hit.point.y, -0.4f);
             }
             else
             {
@@ -135,7 +147,6 @@ public class GrapplingGun : MonoBehaviour
         if (Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace, mask))
         {
             RaycastHit2D _hit = Physics2D.CircleCast(firePoint.position, forgiveness, distanceVector.normalized, maxDistnace, mask);
-            debugCube.transform.position = _hit.point;
             if (_hit.transform.gameObject.layer == grappableLayerNumber || grappleToAll)
             {
                 if (Vector2.Distance(_hit.point, firePoint.position) <= maxDistnace || !hasMaxDistance)
@@ -212,5 +223,10 @@ public class GrapplingGun : MonoBehaviour
     void SetDirection(Vector2 dir)
     {
         lookDirection = dir;
+    }
+
+    private void OnDestroy()
+    {
+        DisableControls();
     }
 }
