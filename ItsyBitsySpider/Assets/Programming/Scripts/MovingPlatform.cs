@@ -12,6 +12,10 @@ public class MovingPlatform : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        
+        Gizmos.color = Color.red;
+        foreach(Vector2 p in patrolPoints)
+        {
+            Gizmos.DrawSphere(transform.position + new Vector3(p.x, p.y, 0), 0.4f);
+        }
     }
 }

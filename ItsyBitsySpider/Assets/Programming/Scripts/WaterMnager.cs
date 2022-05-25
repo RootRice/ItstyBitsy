@@ -32,7 +32,7 @@ public class WaterMnager : MonoBehaviour
 
     float vel;
     [Header("Testing")]
-    [SerializeField] float endLevelSpeed;
+    [SerializeField] float waterRiseSpeed;
     [SerializeField] AnimationCurve endLevelAnim;
     float targetHeight;
     float currentHeight;
@@ -113,6 +113,7 @@ public class WaterMnager : MonoBehaviour
         {
             LevelEnd();
         }
+        transform.position += Vector3.up * Time.deltaTime * waterRiseSpeed;
         GameplayManager.waterHeight = transform.position.y;
     }
     public void StartEndLevelSequence()
