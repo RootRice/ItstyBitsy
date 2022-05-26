@@ -71,11 +71,14 @@ public class GameplayManager : MonoBehaviour
         }
         if(spiderHeight - waterHeight < 1.0f)
         {
+            myPlayer.DisableControls();
+            myGun.DisableCube();
             myWater.StartEndLevelSequence();
             lose = true;
         }
         if(spiderHeight - endLevelHeight > 0.0f && myPlayer.grounded)
         {
+            myPlayer.DisableControls();
             myGun.SetGrapplePoint(Vector2.up);
             myWater.StartEndLevelSequence();
             win = true;

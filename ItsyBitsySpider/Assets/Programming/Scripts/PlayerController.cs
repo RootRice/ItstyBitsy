@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
         controls.Movement.Pause.performed += ctx => BackToMenu();
 
     }
-    void DisableControls()
+    public void DisableControls()
     {
         controls.Enable();
         controls.Movement.Enable();
