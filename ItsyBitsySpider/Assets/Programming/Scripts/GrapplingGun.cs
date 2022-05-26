@@ -174,7 +174,7 @@ public class GrapplingGun : MonoBehaviour
                 }
                 if (Vector2.Distance(hit.point, firePoint.position) <= maxDistnace || !hasMaxDistance)
                 {
-                    debugCube.transform.position = new Vector3(hit.point.x, hit.point.y, -0.4f);
+                    debugCube.transform.position = new Vector3(hit.point.x, hit.point.y, -2.5f);
 
                 }
             }

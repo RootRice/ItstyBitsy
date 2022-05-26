@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -47,6 +48,7 @@ public class PlayerController : MonoBehaviour
         controls.Movement.Jump.canceled += ctx => Jump(false);
         controls.Movement.Freeze.performed += ctx => FreezeMovement(0);
         controls.Movement.Freeze.canceled += ctx => FreezeMovement(1);
+        controls.Movement.Pause.performed += ctx => BackToMenu();
 
     }
     void DisableControls()
@@ -61,8 +63,14 @@ public class PlayerController : MonoBehaviour
         controls.Movement.Jump.canceled -= ctx => Jump(false);
         controls.Movement.Freeze.performed -= ctx => FreezeMovement(0);
         controls.Movement.Freeze.canceled -= ctx => FreezeMovement(1);
+        controls.Movement.Pause.performed -= ctx => BackToMenu();
         controls.Disable();
         controls.Movement.Disable();
+    }
+
+    void BackToMenu()
+    {
+        SceneManager.LoadScene("mainmenu");
     }
     private void Start()
     {

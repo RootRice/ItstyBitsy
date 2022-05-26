@@ -71,6 +71,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""e33d4f63-25c4-41fe-a050-caf9a5a2850c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -153,12 +162,45 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""a9b89067-e34f-4d8f-bc96-0030bc646817"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grapple"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""4a9de7ac-d4a1-40db-a74e-3c9eef9a7ef5"",
                     ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Freeze"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c12c7e11-8777-4103-95fe-ab997e5a3a6f"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Freeze"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fab74f0a-75f6-4856-8114-370dc1510fdd"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -174,6 +216,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_Movement_xJoy = m_Movement.FindAction("xJoy", throwIfNotFound: true);
         m_Movement_Grapple = m_Movement.FindAction("Grapple", throwIfNotFound: true);
         m_Movement_Freeze = m_Movement.FindAction("Freeze", throwIfNotFound: true);
+        m_Movement_Pause = m_Movement.FindAction("Pause", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -238,6 +281,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Movement_xJoy;
     private readonly InputAction m_Movement_Grapple;
     private readonly InputAction m_Movement_Freeze;
+    private readonly InputAction m_Movement_Pause;
     public struct MovementActions
     {
         private @Controls m_Wrapper;
@@ -247,6 +291,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @xJoy => m_Wrapper.m_Movement_xJoy;
         public InputAction @Grapple => m_Wrapper.m_Movement_Grapple;
         public InputAction @Freeze => m_Wrapper.m_Movement_Freeze;
+        public InputAction @Pause => m_Wrapper.m_Movement_Pause;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -271,6 +316,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Freeze.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnFreeze;
                 @Freeze.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnFreeze;
                 @Freeze.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnFreeze;
+                @Pause.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnPause;
+                @Pause.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnPause;
+                @Pause.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnPause;
             }
             m_Wrapper.m_MovementActionsCallbackInterface = instance;
             if (instance != null)
@@ -290,6 +338,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Freeze.started += instance.OnFreeze;
                 @Freeze.performed += instance.OnFreeze;
                 @Freeze.canceled += instance.OnFreeze;
+                @Pause.started += instance.OnPause;
+                @Pause.performed += instance.OnPause;
+                @Pause.canceled += instance.OnPause;
             }
         }
     }
@@ -301,5 +352,6 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnXJoy(InputAction.CallbackContext context);
         void OnGrapple(InputAction.CallbackContext context);
         void OnFreeze(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
 }

@@ -1094,14 +1094,14 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Use LSB to move left and right. Hold LB to stand still.
+  m_Text: 'Use LSB to move left and right. Hold LB to stand still and pull yourself
+    in.
 
 
     (A) to jump
 
 
-    RB
-    to Shoot Web'
+    RB to Shoot Web'
 --- !u!222 &2032212703
 CanvasRenderer:
   m_ObjectHideFlags: 0

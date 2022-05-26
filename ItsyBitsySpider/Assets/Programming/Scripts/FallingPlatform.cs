@@ -7,7 +7,7 @@ public class FallingPlatform : MonoBehaviour
     float colliderHeight;
     bool shouldFall;
     float timer;
-    Vector2 origPos;
+    Vector3 origPos;
     float timeOfImpact;
     [SerializeField] bool fallAfterPlayerLeaves;
     [SerializeField] float timeBeforeFall;
@@ -21,11 +21,11 @@ public class FallingPlatform : MonoBehaviour
     {
         if (shouldFall && !fallAfterPlayerLeaves)
         {
-            transform.position = origPos + new Vector2(Random.Range(-0.2f, 0.2f), Random.Range(-0.1f, 0.1f));
+            transform.position = origPos + new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.1f, 0.1f), 0);
             timer += Time.deltaTime;
             if(timer > timeBeforeFall)
             {
-                transform.position += Vector3.forward * 0.1f;
+                transform.position += Vector3.forward * -0.1f;
                 GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
                 foreach (BoxCollider2D c in GetComponentsInChildren<BoxCollider2D>())
                 {

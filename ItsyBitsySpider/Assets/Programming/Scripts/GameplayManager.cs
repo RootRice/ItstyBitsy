@@ -17,6 +17,7 @@ public class GameplayManager : MonoBehaviour
     static bool lose;
 
     [SerializeField] float transitionTime;
+    float transitionTimeWin = 4.0f;
     float timer;
 
     Image winImage;
@@ -44,9 +45,9 @@ public class GameplayManager : MonoBehaviour
             {
                 winImage.color += new Color(0, 0, 0, 1 * Time.deltaTime*2);
                 timer += Time.deltaTime;
-                if (timer > transitionTime)
+                if (timer > transitionTimeWin)
                 {
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                    SceneManager.LoadScene("mainmenu");
                 }
             }
             if(lose)
